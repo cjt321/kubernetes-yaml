@@ -1,0 +1,131 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: kube-ops
+  labels:
+    app: grafana
+spec:
+  revisionHistoryLimit: 10
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: registry.cn-shenzhen.aliyuncs.com/my-kubernets/grafana:6.0.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: grafana
+        env:
+        - name: GF_SECURITY_ADMIN_USER
+          value: admin
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: alunchen@520
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          subPath: grafana
+          name: storage
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: grafana
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana
+  namespace: kube-ops
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi 
+  selector:
+    matchLabels:
+      name: grafana-data-pv
+      release: stable
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-data-pv
+  namespace: kube-ops
+  labels:
+    name: grafana-data-pv
+    release: stable
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  nfs:
+    path: /share-data/grafana
+    server: 192.168.3.232
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: kube-ops
+  labels:
+    app: grafana
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: grafana
+    
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: kube-ops
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: grafana.hyxmt.cn
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: grafana
+          servicePort: 3000

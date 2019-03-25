@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: kube-ops
+  labels:
+    app: prometheus
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - name: web
+      port: 9090
+      targetPort: http
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus-ingress
+  namespace: kube-ops
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: prometheus.hyxmt.cn
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
