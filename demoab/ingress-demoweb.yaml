@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: demoweb-web123456
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.rule.type: PathPrefixStrip
+spec:
+  rules:
+  - host: demoab555.hyxmt.cn
+    http:
+      paths:
+      - path: /demoa/
+        backend:
+          serviceName: demoa-web-service
+          servicePort: 80
+      - path: /demob/
+        backend:
+          serviceName: demob-web-service
+          servicePort: 80

@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: traefik-ingress-lb
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress-lb
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: ssl
+        secret:
+          secretName: my-hyxmt-cert
+      - name: config
+        configMap:
+          name: traefik-conf-hyxmt-https
+      hostNetwork: true
+      restartPolicy: Always
+      serviceAccountName: ingress
+      containers:
+      - image: registry.cn-shenzhen.aliyuncs.com/my-kubernets/traefik:1.7.10
+        name: traefik-ingress-lb
+        volumeMounts:
+        - mountPath: /opt/conf/k8s/ssl
+          name: ssl
+        - mountPath: /opt/conf/k8s/cf
+          name: config
+        ports:
+        - name: http
+          containerPort: 80
+          hostPort: 80
+        - name: admin
+          containerPort: 8588
+          hostPort: 8588
+        args:
+        - --configFile=/opt/conf/k8s/cf/traefik-https.toml
+        - --web
+        - --web.address=:8588
+        - --kubernetes

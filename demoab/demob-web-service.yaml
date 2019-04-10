@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service # 定义Kubernetes资源的类型为Service
+metadata:
+  name: demob-web-service # 定义资源的名称
+spec:
+  selector: # 指定对应的Pod
+    app: demob-web # 指定Pod的标签为demo-web
+  ports:
+  - protocol: TCP # 协议类型
+    port: 80 # 指定Service访问的端口
+    targetPort: 80 # 指定Service转发请求的端口
