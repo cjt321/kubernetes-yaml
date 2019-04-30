@@ -20,7 +20,7 @@ spec:
         - --kubelet-service=kube-system/kubelet
         - --logtostderr=true
         - --config-reloader-image=registry.cn-shenzhen.aliyuncs.com/my-kubernets/configmap-reload:0.0.1
-        - --prometheus-config-reloader=quay.io/coreos/prometheus-config-reloader:v0.29.0
+        - --prometheus-config-reloader=registry.cn-shenzhen.aliyuncs.com/my-kubernets/prometheus-config-reloader:0.29.0
         image: registry.cn-shenzhen.aliyuncs.com/my-kubernets/prometheus-operator:0.29.0
         name: prometheus-operator
         ports:
