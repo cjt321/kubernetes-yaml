@@ -6,6 +6,8 @@ metadata:
   labels:
     k8s-app: traefik-ingress-lb
 spec:
+  updateStrategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -27,9 +29,9 @@ spec:
       - image: registry.cn-shenzhen.aliyuncs.com/my-kubernets/traefik:1.7.10
         name: traefik-ingress-lb
         volumeMounts:
-        - mountPath: /opt/conf/k8s/ssl
+        - mountPath: /ssl
           name: ssl
-        - mountPath: /opt/conf/k8s/cf
+        - mountPath: /config
           name: config
         ports:
         - name: http
@@ -39,7 +41,7 @@ spec:
           containerPort: 8588
           hostPort: 8588
         args:
-        - --configFile=/opt/conf/k8s/cf/traefik-https.toml
+        - --configFile=/config/traefik-https.toml
         - --web
         - --web.address=:8588
         - --kubernetes
