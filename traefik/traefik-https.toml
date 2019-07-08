@@ -7,8 +7,8 @@ defaultEntryPoints = ["http","https"]
   address = ":443"
     [entryPoints.https.tls]
       [[entryPoints.https.tls.certificates]]
-      certFile = "/ssl/1_hyxmt.cn_bundle.crt"
-      keyFile = "/ssl/2_hyxmt.cn.key"
+      certFile = "/ssl/1_demo.cn_bundle.crt"
+      keyFile = "/ssl/2_demo.cn.key"
       [[entryPoints.https.tls.certificates]]
-      certFile = "/ssl/1_shop.hyxmt.cn_bundle.crt"
-      keyFile = "/ssl/2_shop.hyxmt.cn.key"
+      certFile = "/ssl/1_shop.demo.cn_bundle.crt"
+      keyFile = "/ssl/2_shop.demo.cn.key"
